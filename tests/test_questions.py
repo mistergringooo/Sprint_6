@@ -1,20 +1,23 @@
 from pages.main_page import MainPage
 import pytest
-from selenium import webdriver
 from urls import MAIN_URL
+import allure
 
 class TestQuestions:
-    @classmethod
-    def setup_class(cls):
-        cls.driver = webdriver.Firefox()
 
-    @classmethod
-    def teardown_class(cls):
-        cls.driver.quit()
-
-    @pytest.mark.parametrize('number', [0, 1, 2, 3, 4, 5, 6, 7])
-    def test_question_answer(self, number):
-        self.driver.get(MAIN_URL)
-        main_page = MainPage(self.driver)
+    @pytest.mark.parametrize('number, answer', [
+    (0, 'Сутки — 400 рублей. Оплата курьеру — наличными или картой.'),
+    (1, 'Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим.'),
+    (2, 'Допустим, вы оформляете заказ на 8 мая. Мы привозим самокат 8 мая в течение дня. Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру. Если мы привезли самокат 8 мая в 20:30, суточная аренда закончится 9 мая в 20:30.'),
+    (3, 'Только начиная с завтрашнего дня. Но скоро станем расторопнее.'),
+    (4, 'Пока что нет! Но если что-то срочное — всегда можно позвонить в поддержку по красивому номеру 1010.'),
+    (5, 'Самокат приезжает к вам с полной зарядкой. Этого хватает на восемь суток — даже если будете кататься без передышек и во сне. Зарядка не понадобится.'),
+    (6, 'Да, пока самокат не привезли. Штрафа не будет, объяснительной записки тоже не попросим. Все же свои.'),
+    (7, 'Да, обязательно. Всем самокатов! И Москве, и Московской области.'),
+])
+    @allure.title('Проверка открытия вопросов')
+    def test_question_answer(self, driver, number, answer):
+        driver.get(MAIN_URL)
+        main_page = MainPage(driver)
         main_page.click_question(number)
-        assert main_page.check_answer_visible(number)
+        assert main_page.get_answer_text(number) == answer
